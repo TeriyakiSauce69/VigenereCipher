@@ -1,20 +1,51 @@
 import random
 import sys
+import ntpath
+
+def main():
+    generateKey(10)
+    #encrptyHTMLFile(x, "C:/Users/ihate/Desktop/htmlexample.html")
+    #path_to_enrypted_file = encrptyHTMLFile(x, "C:/Users/ihate/Desktop/htmlexample.html")
+    #originalText(,x)
 
 #Return Generated Random KeySize of Size N
 def generateKey(keySize):
     k = []
     for i in range(keySize):
         k.append(chr(random.randrange(26)+ord('A')))
-    return("".join(k))
+
+
+    new_file = open("KeyFile.txt", "x")
+    new_file.close()
+
+    z = ("".join(k))
+
+    with open("KeyFile.txt", "w") as f:
+        #for line in z:
+        f.write(z)
+    print("New file text with key created as KeyFile.txt")
+    #return("".join(k))
 
 def repeat_to_length(string_to_expand, length):
     return (string_to_expand * (int(length/len(string_to_expand))+1))[:length]
 
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
+
 #Encryption
 #Input: path to a html file and the file that has the key
 #Output: Encrypted html file (add _end to the end of the new filename)
-def encrptyHTMLFile(key,file):
+def encrptyHTMLFile(path_to_key,file):
+    key = ""
+
+    with open(path_to_key, "r") as f:
+        lines = f.readlines()
+    with open(path_to_key, "w") as f:
+        for line in lines:
+            key += line
+
+
     encryptedText = []
     plainText = ""
 
@@ -23,17 +54,12 @@ def encrptyHTMLFile(key,file):
     with open(file, "r") as f:
         lines = f.readlines()
         for line in lines:
-            #print(line)
             plainText+=line
 
     repeated_Key = repeat_to_length(key,len(plainText))
 
-
     for i in range(len(plainText)):
         if alpha.find(plainText[i].upper()) == -1:
-            #print(plainText[i])
-        #if ord(plainText[i]) <= 64:
-
             encryptedText.append((plainText[i]))
             continue
 
@@ -45,18 +71,43 @@ def encrptyHTMLFile(key,file):
         elif plainText[i].islower():
             encryptedText.append(chr(x).lower())
 
-    return (("".join(encryptedText)))
+    new_file = open(path_leaf(file).replace(".html","_enc.html"), "x")
+    new_file.close()
 
-def originalText(cipher_text, key):
+    new_enc_file = path_leaf(file).replace(".html", "_enc.html")
+
+    lines = ("".join(encryptedText))
+
+    with open(new_enc_file, "w") as f:
+        for line in lines:
+            f.write(line)
+    print("New encrypted file created at " + new_enc_file)
+    #return new_enc_file
+
+def originalText(cipher_text_path, path_to_key):
+    key = ""
+
+    with open(path_to_key, "r") as f:
+        lines = f.readlines()
+    with open(path_to_key, "w") as f:
+        for line in lines:
+            key += line
+
+
+    cipher_text = ""
+
+    with open(cipher_text_path, "r") as f:
+        lines = f.readlines()
+    with open(cipher_text_path, "w") as f:
+        for line in lines:
+            cipher_text += line
+
     orig_text = []
-
     alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     repeated_Key = repeat_to_length(key, len(cipher_text))
 
     for i in range(len(cipher_text)):
-        # if ord(cipher_text[i]) < 65 or ord(cipher_text[i]) > 122:
-        #     continue
         if alpha.find(cipher_text[i].upper()) == -1:
             orig_text.append(cipher_text[i])
             continue
@@ -64,30 +115,24 @@ def originalText(cipher_text, key):
         x = (ord(cipher_text[i].upper()) -
              ord(repeated_Key[i]) + 26) % 26
         x += ord('A')
-        #orig_text.append(chr(x))
 
         if cipher_text[i].isupper():
             orig_text.append(chr(x))
         elif cipher_text[i].islower():
             orig_text.append(chr(x).lower())
 
-    return("" . join(orig_text))
+    new_file = open(path_leaf(cipher_text_path).replace("_enc.html", "_dec.html"), "x")
+    new_file.close()
 
-x = generateKey(10)
+    new_enc_file = path_leaf(cipher_text_path).replace("_enc.html", "_dec.html")
 
-y =encrptyHTMLFile(x,"C:/Users/ihate/Desktop/htmlexample.html")
-print(y)
+    lines = ("".join(orig_text))
+    with open(new_enc_file, "w") as f:
+        for line in lines:
+            f.write(line)
 
-print(originalText(y,x))
-# y= repeat_to_length(x,37)
-# print(y,len(y))
-# print(x)
-#
-# encryptedstuff = (encrptyHTMLFile("C:/Users/ihate/Desktop/htmlexample.html",10))
-# cipher_text =encryptedstuff
-# print(cipher_text)
-# # da_key = encryptedstuff[1]
-# #print((encrptyHTMLFile(x,4))[0])
-#
-# print(originalText(cipher_text,x))
-# print(generateKey(10))
+    return None
+
+
+if __name__ == '__main__':
+    main()
