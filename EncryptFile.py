@@ -17,9 +17,9 @@ def encrptyHTMLFile(path_to_key,file):
 
     with open(path_to_key, "r") as f:
         lines = f.readlines()
-    with open(path_to_key, "w") as f:
-        for line in lines:
-            key += line
+
+    for line in lines:
+        key += line
 
 
     encryptedText = []

@@ -16,9 +16,9 @@ def originalText(cipher_text_path, path_to_key):
 
     with open(path_to_key, "r") as f:
         lines = f.readlines()
-    with open(path_to_key, "w") as f:
-        for line in lines:
-            key += line
+
+    for line in lines:
+        key += line
 
 
     cipher_text = ""
